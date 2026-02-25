@@ -1,1 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笑容进化计划 - 焕新口腔</title>
+    <style>
+        :root {
+            --primary-yellow: #FFD200;
+            --dark-gray: #333;
+            --border-width: 3px;
+        }
 
+        body {
+            background-color: #f0f0f0;
+            background-image: radial-gradient(#ccc 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: "Microsoft YaHei", "Heiti SC", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            border: var(--border-width) solid var(--dark-gray);
+            box-shadow: 8px 8px 0px var(--dark-gray);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--dark-gray);
+            font-size: 24px;
+            margin-bottom: 25px;
+            border-bottom: 4px solid var(--primary-yellow);
+            padding-bottom: 10px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--dark-gray);
+            font-size: 15px;
+        }
+
+        input[type="text"], input[type="tel"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: var(--border-width) solid var(--dark-gray);
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+            background: #fafafa;
+        }
+
+        input:focus { background-color: #fffde7; border-color: #000; }
+
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            border: 2px solid var(--dark-gray);
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            background: #fff;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .tag.active {
+            background: var(--primary-yellow);
+            box-shadow: 3px 3px 0px var(--dark-gray);
+            font-weight: bold;
+            transform: translate(-1px, -1px);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-yellow);
+            color: var(--dark-gray);
+            border: var(--border-width) solid var(--dark-gray);
+            padding: 15px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0px 5px 0px #b89800;
+            transition: all 0.1s;
+        }
+
+        .btn-submit:active {
+            transform: translateY(4px);
+            box-shadow: 0px 1px 0px #b89800;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>笑容进化计划 GO!</h1>
+    
+    <form id="dentistForm">
+        <div class="form-group">
+            <label>如何称呼英雄？</label>
+            <input type="text" id="custName" placeholder="例如：孙悟空" required>
+        </div>
+
+        <div class="form-group">
+            <label>联系电波 (手机号)</label>
+            <input type="tel" id="custTel" placeholder="请输入您的号码" required>
+        </div>
+
+        <div class="form-group">
+            <label>目前的牙齿状态 (可多选)：</label>
+            <div class="tag-group">
+                <div class="tag" onclick="this.classList.toggle('active')">🦷 牙齿不齐</div>
+                <div class="tag" onclick="this.classList.toggle('active')">✨ 牙齿美白</div>
+                <div class="tag" onclick="this.classList.toggle('active')">😣 牙痛出血</div>
+                <div class="tag" onclick="this.classList.toggle('active')">🛡️ 常规检查</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>还有什么想对医生说的？</label>
+            <textarea id="custNotes" rows="3" placeholder="写下你的小烦恼..."></textarea>
+        </div>
+
+        <button type="button" class="btn-submit" id="submitBtn">立即开启进化！</button>
+    </form>
+    <p class="footer-note">Powered by 胶囊医疗技术中心</p >
+</div>
+
+<script>
+    document.getElementById('submitBtn').onclick = async function() {
+        const name = document.getElementById('custName').value;
+        const tel = document.getElementById('custTel').value;
+        const notes = document.getElementById('custNotes').value;
+        const activeTags = Array.from(document.querySelectorAll('.tag.active')).map(t => t.innerText);
+
+        if (!name || !tel) {
+            alert("嘿！名字和联系电波不能空着哦！");
+            return;
+        }
+
+        const btn = this;
+        btn.innerText = "传输中...";
+        btn.disabled = true;
+
+        // --- 核心替换：Formspree 极简对接 ---
+        try {
+            const response = await fetch('https://formspree.io/f/xreardna', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "姓名": name,
+                    "手机号": tel,
+                    "需求项目": activeTags.join('、'),
+                    "留言备注": notes
+                })
+            });
+
+            if (response.ok) {
+                alert('🚀 传送成功！医生正坐着筋斗云赶来！');
+                document.getElementById('dentistForm').reset();
+                document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+            } else {
+                alert('⚠️ 发送失败，请检查 Formspree 配置！');
+            }
+        } catch (e) {
+            alert('⚠️ 网络信号干扰，发送失败！');
+        } finally {
+            btn.innerText = "立即开启进化！";
+            btn.disabled = false;
+        }
+    };
+</script>
+</body>
+</html>
